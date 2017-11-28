@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <munit:config name="munit" doc:name="MUnit configuration"/>
+    <spring:beans>
+        <spring:import resource="classpath:munit-order-system.xml"/>
+    </spring:beans>
+    <munit:test name="processOrders-test-suiteTest" description="FAILED: expected internation Key rows">
+        <munit:assert-true message="FAILED: no international Rows" condition="#[payload.'international'.size()&gt;0]" doc:name="Assert True"/>
+    </munit:test>
+    <munit:test name="processOrders_payloadReturnsJavaMapwithTwoElements_True" description="calling processOrders flow returns paload of type Java Map containing two key/Value pairs">
+        <munit:set payload="#[[{'orderID':444, 'location':'international','price':14.01}, {'orderID':444, 'location':'international','price':14.01}, {'orderID':555, 'location':'domestic','price':14.01}]]" doc:name="Set Payload to International and Domestic Orders"/>
+        <set-payload value="#[{'international': java.util.Map&lt;String,String&gt;[], 'domestic': java.util.Map&lt;String,String&gt;[]}]" doc:name="Set OrderSchema"/>
+        <munit:assert-true message="FAILED: Expected payload's datatype to be Java Map, but found #[payload.getClass().getName()] instead!!" condition="#[payload is java.util.Map]" doc:name="Validate Payload type is Java Map"/>
+    </munit:test>
+    <munit:test name="processOrders-test-suite-munit-order-systemFlow1Test" description="Test">
+        <munit:set payload="#[[{'orderID':444, 'location':'international','price':14.01}, {'orderID':444, 'location':'international','price':14.01}, {'orderID':555, 'location':'domestic','price':14.01}]]" doc:name="Set Message"/>
+        <flow-ref name="munit-order-systemFlow1" doc:name="Flow-ref to munit-order-systemFlow1"/>
+        <munit:assert-true condition="#[payload.'international'.size()&gt;0]" doc:name="Assert True"/>
+    </munit:test>
+</mule>
